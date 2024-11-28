@@ -1,28 +1,49 @@
-body{
-    background-color: rgb(86, 201, 251);
+body {
+    background-color: rgb(63, 177, 229);
 }
-main{
+#circuloBackGround{
+    background-color: rgb(251, 251, 251);
+    height: 2500px;
+    width: 3500px;
+    border-radius: 50%;
+    position: absolute;
+    top: -1600px; 
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: -1; /* Garante que fique atrás de outros elementos */
+}
+main {
     margin-top: 10dvh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    
 }
-#loginForm{
-    height:35dvh;
-    width: 35dvw; 
+
+#loginForm {
+    margin-top: 80px;
+    height: 400px;
+    width: 700px;
     background-color: rgb(0, 0, 0);
     border-radius: 20px 20px 0px 0px;
     overflow: visible;
+    position: relative;
 }
-#loginFormFooter{
-    height:5dvh;
-    width: 35dvw; 
-    background-color: rgb(255, 255, 255);
-    border-radius: 0px 0px 20px 20px;
-}
-img{
-    z-index: 1;
-    margin-bottom: 20px;
 
+#loginFormFooter {
+    height: 50px;
+    width: 700px;
+    background-color: rgb(232, 0, 0);
+    border-radius: 0px 0px 20px 20px;
+    
+}
+
+img {
+    z-index: 1;
+    position: absolute;
+    top: -70px;  
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8dvw;  
+    height: 15dvh;
+    border-radius: 50%;
 }
