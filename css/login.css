@@ -4,13 +4,13 @@ body {
 #circuloBackGround{
     background-color: rgb(251, 251, 251);
     height: 2500px;
-    width: 3500px;
+    width: 200dvw;
     border-radius: 50%;
     position: absolute;
     top: -1600px; 
     left: 50%;
     transform: translateX(-50%);
-    z-index: -1; /* Garante que fique atrás de outros elementos */
+    z-index: -1; 
 }
 main {
     margin-top: 10dvh;
@@ -20,21 +20,24 @@ main {
 }
 
 #loginForm {
-    margin-top: 80px;
-    height: 400px;
+    margin-top: 30px;
+    height: 370px;
     width: 700px;
-    background-color: rgb(0, 0, 0);
+    background-color: rgb(58, 164, 213);
     border-radius: 20px 20px 0px 0px;
-    overflow: visible;
     position: relative;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 #loginFormFooter {
-    height: 50px;
+    height: 60px;
     width: 700px;
-    background-color: rgb(232, 0, 0);
+    background-color: rgb(255, 255, 255);
     border-radius: 0px 0px 20px 20px;
-    
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 img {
@@ -46,4 +49,15 @@ img {
     width: 8dvw;  
     height: 15dvh;
     border-radius: 50%;
+}
+
+.input{
+    font-size: 20px;
+    margin-top: 15px;
+    height: 30px;
+    width:60% ;
+  padding: 1rem;
+  border-radius: 1rem;
+  border: none;
+  box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
 }
