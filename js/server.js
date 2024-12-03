@@ -40,59 +40,78 @@ app.post('/register', async (req, res) => {
     }
 
     // Insere o novo usuário no banco de dados
-    db.query('INSERT INTO users (nome_usuario, email, data_nascimento, senha) VALUES (?, ?, ?, ?)', [user, email,birth, hashedPassword], (err, result) => {
+    db.query('INSERT INTO users (username, email, birth, password) VALUES (?, ?, ?, ?)', [user, email,birth, hashedPassword], (err, result) => {
       if (err) throw err;
       res.send('Usuário registrado com sucesso');
     });
   });
 });
 
+app.post('/createGroup', async (req,res) => {
+  const {groupName, groupDescription} = req.body;
+  db.query('SELECT group_name from groups where group_name = ?',[groupName],(err,result) =>{
+    if (err) throw err;
+    if (result.length > 0) {
+      return res.status(400).send('Grupo já existe');
+    }
+
+    // Insere o novo usuário no banco de dados
+    db.query('INSERT INTO groups (group_name, description) VALUES (?, ?)', [groupName,groupDescription], (err, result) => {if (err) throw err;
+      res.send('Usuário registrado com sucesso');
+    });
+  })
+})
+
 // Rota para login de usuários
 app.post('/login', async (req, res) => {
-  const { email, password } = req.body; // Obtém o email e senha do corpo da requisição
+  const { user, password } = req.body; // Obtém o email e senha do corpo da requisição
 
   // Consulta o usuário no banco de dados
-  db.query('SELECT * FROM users WHERE email = ?', [email], async (err, result) => {
+  db.query('SELECT * FROM users WHERE username= ?', [user], async (err, result) => {
     if (err) throw err;
 
     // Verifica se o usuário existe e se a senha está correta
     if (result.length === 0 || !(await bcrypt.compare(password, result[0].password))) {
-      return res.status(400).send('Email ou senha inválidos');
+      return res.status(400).send('Login ou senha inválidos');
     }
 
     // Gera o token JWT
-    const token = jwt.sign({ email }, SECRET_KEY, { expiresIn: '1h' }); // Define validade de 1 hora
+    const token = jwt.sign({ user }, SECRET_KEY, { expiresIn: '1h' });
     res.json({ token }); // Retorna o token ao cliente
   });
 });
 
 // Middleware para verificar o token JWT nas requisições
 const authenticateToken = (req, res, next) => {
-  // Extrai o token do cabeçalho de autorização
-  const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
+  const token = req.headers['authorization']?.split(' ')[1];
 
-  if (!token) return res.sendStatus(401); // Retorna 401 se não houver token
+  if (!token) {
+    console.log('Token não fornecido');
+    return res.sendStatus(401);
+  }
 
   jwt.verify(token, SECRET_KEY, (err, user) => {
-    if (err) return res.sendStatus(403); // Retorna 403 se o token for inválido ou expirado
-    req.user = user; // Armazena o email do usuário no objeto `req` para uso futuro
-    next(); // Passa para a próxima função
+    if (err) {
+      console.log('Erro ao verificar token:', err);
+      return res.sendStatus(403);
+    }
+    console.log('Usuário autenticado:', user); // Certifique-se de que o username está correto
+    req.user = user;
+    next();
   });
 };
 
 // Rota para obter dados do usuário logado
 app.get('/user', authenticateToken, (req, res) => {
-  // Consulta o email do usuário com base no email armazenado no token
-  db.query('SELECT email FROM users WHERE email = ?', [req.user.email], (err, result) => {
+  db.query('SELECT username, email FROM users WHERE username = ?', [req.user.user], (err, result) => {
     if (err) throw err;
-
     if (result.length === 0) {
       return res.status(404).send('Usuário não encontrado');
     }
-
-    res.json(result[0]); // Retorna os dados do usuário
+    res.json(result[0]); 
   });
 });
+
 
 // Rota para atualizar informações do usuário
 app.put('/user', authenticateToken, async (req, res) => {
@@ -130,3 +149,6 @@ app.delete('/user', authenticateToken, (req, res) => {
 app.listen(3000, () => {
   console.log('Servidor rodando na porta 3000');
 });
+
+
+
