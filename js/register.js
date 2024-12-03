@@ -6,7 +6,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
     // Obtém os valores dos campos de entrada de email e senha
     const user = document.getElementById('user').value;
     const email = document.getElementById('email').value;
-    const birth = document.getElementById('password').value;
+    const birth = document.getElementById('birth').value;
     const password = document.getElementById('password').value;
 
     // Envia uma solicitação HTTP para o servidor na rota '/register' usando o método POST
@@ -38,3 +38,13 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
 });
 
 
+function validarData() {
+  const dataInput = document.getElementById("birth").value;
+  const anoAtual = new Date().getFullYear();
+  const anoDigitado = new Date(dataInput).getFullYear();
+
+  if (anoDigitado === anoAtual) {
+    alert("O ano de nascimento não pode ser o mesmo que o ano atual!");
+    document.getElementById("birth").value = ""; 
+  }
+}
