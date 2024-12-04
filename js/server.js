@@ -59,8 +59,21 @@ app.post('/createGroup', async (req,res) => {
     db.query('INSERT INTO groups (group_name, description) VALUES (?, ?)', [groupName,groupDescription], (err, result) => {if (err) throw err;
       res.send('Usuário registrado com sucesso');
     });
+    
   })
 })
+app.post('/relationGroup', async (req, res) => {
+  const { groupId, userId, admin } = req.body;
+    db.query('INSERT INTO users_groups (admin, user_id, group_id) VALUES (?, ?, ?)', [admin, userId, groupId], (err) => {
+      if (err) return res.status(500).json({ error: 'Erro ao criar relação de grupo' });
+
+      res.send('Relacionamento criado com sucesso');
+    });
+  });
+
+
+
+
 
 // Rota para login de usuários
 app.post('/login', async (req, res) => {
@@ -103,7 +116,7 @@ const authenticateToken = (req, res, next) => {
 
 // Rota para obter dados do usuário logado
 app.get('/user', authenticateToken, (req, res) => {
-  db.query('SELECT username, email FROM users WHERE username = ?', [req.user.user], (err, result) => {
+  db.query('SELECT username, email,id FROM users WHERE username = ?', [req.user.user], (err, result) => {
     if (err) throw err;
     if (result.length === 0) {
       return res.status(404).send('Usuário não encontrado');
@@ -111,7 +124,44 @@ app.get('/user', authenticateToken, (req, res) => {
     res.json(result[0]); 
   });
 });
+app.get('/userId', async (req, res) => { //retorna os dados do usuário como um json
+  const { username } = req.query; 
+  
+  if (!username) {
+    return res.status(400).json({ error: 'Username é obrigatório' });
+  }
 
+  db.query('SELECT * FROM users WHERE username = ?', [username], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: 'Erro no servidor' });
+    }
+
+    if (result.length === 0) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+
+    res.json({ id: result[0] });
+  });
+});
+app.get('/groupId', async (req, res) => { //retorna os dados do usuário como um json
+  const { group } = req.query; 
+  
+  if (!group) {
+    return res.status(400).json({ error: 'Grupo é obrigatório' });
+  }
+
+  db.query('SELECT * FROM groups WHERE group_name = ?', [group], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: 'Erro no servidor' });
+    }
+
+    if (result.length === 0) {
+      return res.status(404).json({ error: 'Grupo não encontrado' });
+    }
+
+    res.json({ id: result[0] });
+  });
+});
 
 // Rota para atualizar informações do usuário
 app.put('/user', authenticateToken, async (req, res) => {
