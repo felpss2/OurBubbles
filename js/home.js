@@ -31,12 +31,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const groupName = document.getElementById("groupName").value;
         const groupDescription = document.getElementById("groupDescription").value;
+        const groupPassword = document.getElementById('groupPassword').value
 
         const createResponse = await fetch('http://localhost:3000/createGroup', {
             method: 'POST', // Define o método HTTP como POST, ideal para enviar dados ao servidor
             headers: { 'Content-Type': 'application/json' }, // Define o cabeçalho para indicar que os dados estão em JSON
             // Converte os valores de email e senha para uma string JSON para enviar no corpo da solicitação
-            body: JSON.stringify({ groupName, groupDescription, })
+            body: JSON.stringify({ groupName, groupDescription,groupPassword })
         });
         const messageElement = document.getElementById('message');
 

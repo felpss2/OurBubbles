@@ -17,7 +17,7 @@ app.use(bodyParser.json()); // Middleware para processar o corpo das requisiçõ
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root', // Ajuste conforme necessário
-  password: '', // Insira a senha se aplicável
+  password: 'root', // Insira a senha se aplicável
   database: 'ourbubbles' // Nome do banco de dados
 });
 
@@ -48,7 +48,8 @@ app.post('/register', async (req, res) => {
 });
 
 app.post('/createGroup', async (req,res) => {
-  const {groupName, groupDescription} = req.body;
+  const {groupName, groupDescription,groupPassword} = req.body;
+  const hashedPassword = await bcrypt.hash(groupPassword, 10);
   db.query('SELECT group_name from groups where group_name = ?',[groupName],(err,result) =>{
     if (err) throw err;
     if (result.length > 0) {
@@ -56,7 +57,7 @@ app.post('/createGroup', async (req,res) => {
     }
 
     // Insere o novo usuário no banco de dados
-    db.query('INSERT INTO groups (group_name, description) VALUES (?, ?)', [groupName,groupDescription], (err, result) => {if (err) throw err;
+    db.query('INSERT INTO groups (group_name, description, password) VALUES (?, ?, ?)', [groupName,groupDescription,hashedPassword], (err, result) => {if (err) throw err;
       res.send('Usuário registrado com sucesso');
     });
     
