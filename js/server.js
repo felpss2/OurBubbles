@@ -17,7 +17,7 @@ app.use(bodyParser.json()); // Middleware para processar o corpo das requisiçõ
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root', // Ajuste conforme necessário
-  password: 'root', // Insira a senha se aplicável
+  password: '', // Insira a senha se aplicável
   database: 'ourbubbles' // Nome do banco de dados
 });
 
