@@ -12,15 +12,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const decodedToken = decodeJWT(token); // Decodifique o token
-        console.log(decodedToken);
-        const userId = decodedToken.user; // Extraia o userId do token
+        console.log('Token decodificado:', decodedToken);
+
+        const userId = decodedToken.id; // Extraia o `id` do token (correto)
 
         // Se o userId existir, adicione ao campo oculto
         if (userId) {
             document.getElementById('userId').value = userId;
         } else {
-            console.error('User ID não encontrado no token.');
-            document.getElementById('message').textContent = 'Erro ao obter o User ID.';
+            console.error('ID do usuário não encontrado no token.');
+            document.getElementById('message').textContent = 'Erro ao obter o ID do usuário.';
         }
     } else {
         document.getElementById('message').textContent = 'Você precisa estar logado para entrar em um grupo.';
