@@ -4,16 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Entrar no Grupo</title>
+    <style>
+        /* Seu estilo de formatação */
+    </style>
 </head>
 <body>
     <h2>Entrar no Grupo</h2>
 
-    <form id="enterGroupForm">
+    <!-- Formulário simples -->
+    <form id="groupForm">
         <label for="groupId">ID do Grupo:</label>
-        <input type="text" id="groupId" name="groupId" required><br>
+        <input type="text" id="groupId" name="groupId" placeholder="Digite o ID do grupo" required>
 
         <label for="groupPassword">Senha do Grupo:</label>
-        <input type="password" id="groupPassword" name="groupPassword" required><br>
+        <input type="password" id="groupPassword" name="groupPassword" placeholder="Digite a senha do grupo" required>
+
+        <!-- Campo oculto para o userId -->
+        <input type="hidden" id="userId" name="userId">
 
         <button type="submit">Entrar no Grupo</button>
     </form>

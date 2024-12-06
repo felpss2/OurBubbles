@@ -25,13 +25,13 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         // Converte a resposta em JSON para extrair dados, como o token
         const data = await response.json();
         // Armazena o token de autenticação no armazenamento local do navegador (localStorage) para uso futuro
-        localStorage.setItem('token', data.token); 
+        localStorage.setItem('token', data.token);
         // Redireciona o usuário para a página 'user.html' após o login bem-sucedido
-        window.location.href = 'loginGrupo.html'; 
+        window.location.href = 'loginGrupo.html';
     } else {
         // Caso a resposta não seja bem-sucedida, extrai a mensagem de erro do corpo da resposta
         const errorMessage = await response.text();
         // Define o texto do elemento de mensagem para mostrar o erro na interface do usuário
-        messageElement.textContent = errorMessage; 
+        messageElement.textContent = errorMessage;
     }
 });

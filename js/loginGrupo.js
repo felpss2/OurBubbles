@@ -1,70 +1,66 @@
-document.getElementById('enterGroupForm').addEventListener('submit', async (e) => {
-    // Previne o comportamento padrão de envio do formulário
-    e.preventDefault();
+document.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem('token'); // Pegue o token armazenado
 
-    // Obtém os valores dos campos de entrada
-    const groupId = document.getElementById('groupId').value;
-    const groupPassword = document.getElementById('groupPassword').value;
+    // Verifica se o token existe
+    if (token) {
+        // Função para decodificar o JWT e extrair o userId
+        function decodeJWT(token) {
+            const base64Url = token.split('.')[1]; // Pegando a parte do payload
+            const base64 = base64Url.replace('-', '+').replace('_', '/'); // Corrigindo os caracteres para base64
+            const decodedData = JSON.parse(window.atob(base64)); // Decodificando o payload
+            return decodedData;
+        }
 
-    // Envia uma solicitação para verificar se o grupo existe e pegar a senha
-    const response = await fetch(`http://localhost:3000/groupId?group=${groupId}`);
-    const groupData = await response.json();
+        const decodedToken = decodeJWT(token); // Decodifique o token
+        console.log(decodedToken);
+        const userId = decodedToken.user; // Extraia o userId do token
 
-    if (groupData.error) {
-        document.getElementById('message').textContent = groupData.error;
-        return;
-    }
-
-    // Compara a senha informada com a do grupo no banco
-    const isPasswordCorrect = await comparePassword(groupPassword, groupData.password);
-
-    if (!isPasswordCorrect) {
-        document.getElementById('message').textContent = 'Senha incorreta!';
-        return;
-    }
-
-    // Se a senha estiver correta, faz a relação entre o usuário e o grupo
-    const token = localStorage.getItem('token');
-    if (!token) {
-        document.getElementById('message').textContent = 'Você precisa estar autenticado.';
-        return;
-    }
-
-    // Envia o request para adicionar o usuário ao grupo
-    const userId = decodeJwt(token).userId; // Supondo que o token tenha o ID do usuário
-    const addUserToGroupResponse = await fetch('http://localhost:3000/relationGroup', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ groupId, userId, admin: false })
-    });
-
-    if (addUserToGroupResponse.ok) {
-        document.getElementById('message').textContent = 'Você entrou no grupo com sucesso!';
+        // Se o userId existir, adicione ao campo oculto
+        if (userId) {
+            document.getElementById('userId').value = userId;
+        } else {
+            console.error('User ID não encontrado no token.');
+            document.getElementById('message').textContent = 'Erro ao obter o User ID.';
+        }
     } else {
-        const errorMessage = await addUserToGroupResponse.text();
-        document.getElementById('message').textContent = errorMessage;
+        document.getElementById('message').textContent = 'Você precisa estar logado para entrar em um grupo.';
     }
 });
 
-// Função para comparar a senha do grupo
-async function comparePassword(inputPassword, storedPasswordHash) {
-    const response = await fetch('http://localhost:3000/comparePassword', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ inputPassword, storedPasswordHash })
-    });
+document.getElementById('groupForm').addEventListener('submit', async (e) => {
+    e.preventDefault(); // Impede o envio padrão do formulário
 
-    const result = await response.json();
-    return result.isMatch;
-}
+    const formData = new FormData(e.target);
+    const groupId = formData.get('groupId');
+    const groupPassword = formData.get('groupPassword');
+    const userId = formData.get('userId'); // O 'userId' é extraído do campo oculto
 
-// Função para decodificar o JWT e obter o userId
-function decodeJwt(token) {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload;
-}
+    console.log('Dados do formulário:', { groupId, groupPassword, userId });
+
+    try {
+        const response = await fetch('http://localhost:3000/relationGroup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                groupId,
+                groupPassword,
+                userId, // Passando o userId para o servidor
+            }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            console.log('Grupo acessado com sucesso:', data);
+            document.getElementById('message').textContent = 'Você entrou no grupo com sucesso!';
+        } else {
+            console.error('Erro ao acessar o grupo:', data);
+            document.getElementById('message').textContent = data.error || 'Erro ao entrar no grupo.';
+        }
+    } catch (error) {
+        console.error('Erro na requisição:', error);
+        document.getElementById('message').textContent = 'Erro na requisição. Tente novamente.';
+    }
+});
