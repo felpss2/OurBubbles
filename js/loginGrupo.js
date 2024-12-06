@@ -39,10 +39,12 @@ document.getElementById('groupForm').addEventListener('submit', async (e) => {
     console.log('Dados do formulário:', { groupId, groupPassword, userId });
 
     try {
+        
         const response = await fetch('http://localhost:3000/relationGroup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}` // Adicionando o token ao cabeçalho
             },
             body: JSON.stringify({
                 groupId,
@@ -50,6 +52,7 @@ document.getElementById('groupForm').addEventListener('submit', async (e) => {
                 userId, // Passando o userId para o servidor
             }),
         });
+
 
         const data = await response.json();
 
